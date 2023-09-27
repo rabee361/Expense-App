@@ -21,10 +21,11 @@
 
     <div>
         <h1>{{item.expense_name}}</h1>
+        <small>{{item.expense_type}}</small><br>
         {% if item.expense_type == 'income' %}
-        <small style="color: green;">{{item.price}}$</small><br>
+        <small>{{item.price}}$</small><br>
         {% else %}
-        <small style="color: red;">{{item.price}}$</small><br>
+        <small>{{item.price}}$</small><br>
         {% endif %}
         <small>{{item.time_purchased}}</small><br>
         <a href="{% url 'delete-item' item.id %}"><button>Delete</button></a>
@@ -33,19 +34,13 @@
     {% endfor %}
     <div>
         <h1>Total Expenses is : {{expenses|floatformat:2}}$</h1>
-        <a href="{% url 'chart' %}"><button>Show Bar Chart</button></a>
-    </div>
-    <div class="chart">
-    {% for elem in graph %}
-        {{elem|safe}}
-     {% endfor %}
     </div>
 
-    
-    <div>
-
-
-    </div>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <input type="submit">
+    </form>
 
 
 </body>
