@@ -9,16 +9,17 @@ class Item(models.Model):
         ('Leisure' , 'Leisure'),
         ('Electronics' , 'Electronics'),
         ('House&Renovation' , 'House&Renovation'),
-        ('Cloths' , 'Cloths')
+        ('Cloths' , 'Cloths'),
+        ('Medicin' , 'Medicin')
     )
 
     expense_name = models.CharField(max_length = 100)
-    price = models.DecimalField(max_digits=10,decimal_places=2)
-    time_purchased = models.DateTimeField(auto_now=True)
+    price = models.IntegerField(default=0)
+    time_purchased = models.DateTimeField(auto_now_add=True)
     expense_type = models.CharField(choices=CHOICES , max_length=20)
 
 
     def __str__(self):
-        return self.expense_name
+        return f"{self.expense_name} ل.س({self.price})"
 
 
