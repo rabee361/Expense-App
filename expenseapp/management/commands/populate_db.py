@@ -7,6 +7,8 @@ from django.core.management.base import BaseCommand
 from expenseapp.models import Item 
 
 
+
+
 class Command(BaseCommand):
     help = "populate DB with Data"
     def add_arguments(self,parser):
@@ -20,7 +22,7 @@ class Command(BaseCommand):
             dt = pytz.utc.localize(datetime.now() - timedelta(days = random.randint(0 , 1825)))
             expense = Item.objects.create(
                 expense_name = str(i),
-                price = random.randint(500,50000),
+                price = random.randrange(500,50000,50),
                 expense_type = random.choice(types)
             )
             expense.time_purchased = dt

@@ -1,3 +1,9 @@
+    # x=list()
+    # types = Item.objects.all().values("expense_type").distinct()
+    # for i in types:
+    #     x.append(i["expense_type"])
+    # print(x)
+
 types = ['Medicin','Transport','Food','Leisure','House&Renovations','Electronics','Cloths']
 months = [
     "January", "February", "March", "April",
