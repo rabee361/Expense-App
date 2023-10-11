@@ -1,16 +1,12 @@
-
   <nav>
-    <input type="checkbox" id="check">
-    <label for="check" class="checkbtn">
-      <i class="fas fa-bars"></i>
-    </label>
-    <label class="logo">DesignX</label>
+    <label class="logo">Welcome {{request.user}}</label>
+
     <ul>
       <li><a href="{% url 'main' %}">Home</a></li>
       <li><a href="{% url 'expense' %}">Expense</a></li>
-      <li><a href="#">Services</a></li>
-      <li><a href="#">Contact</a></li>
-      <li><a href="#">Feedback</a></li>
+      <li><a href="{% url 'income' %}">Income</a></li>
+      <li><a href="{% url 'contact' %}">Contact</a></li>
+      <li><a href="{% url 'logout' %}">Logout</a></li>
     </ul>
   </nav>
 

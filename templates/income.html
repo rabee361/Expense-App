@@ -110,28 +110,8 @@
 <body>
     {% include 'navbar.html' %}
 
-    <form method="post" id="AddForm">
-      {% csrf_token %}
-      {{form.as_p}}
-      <input type="submit" value="submit">
-      
-     </form>
+<h1>Hello income</h1>
 
-    {% for expense in expenses %}
-    {% if expense %}
-    
-    <p>
-        <h3>{{expense.expense_name}}</h3>
-        <small>{{expense.expense_type}}</small><br>
-        <small>{{expense.time_purchased}}</small>
-    </p>
-    {% else %}
-    <p>No expenses for today</p>
 
-    {% endif %}
-{% endfor %}
 </body>
 </html>
-
-
-

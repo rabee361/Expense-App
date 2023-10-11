@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <form action="" method="post" autocomplete="off">
+        {% csrf_token %}
+        <label for="username">UserName :</label>
+        <input type="username" name="username" placeholder="example123" value=""><br>
+        <label for="password">Password :</label>
+        <input type="password" name="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
+        <input type="submit" value="login">
+    </form>
+    <div>
+        <small>
+            Don't Have an account ? <a href="{% url 'sign-up' %}">Sign Up</a> now
+        </small>
+    </div>
+</body>
+</html>
