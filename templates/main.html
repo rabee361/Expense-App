@@ -187,7 +187,7 @@ section{
 <script>
   $(document).ready(function() {
     $.ajax({
-      url: "/chart/filter-options/",
+      url: "/chart/options/",
       type: "GET",
       dataType: "json",
       success: (jsonResponse) => {
@@ -232,15 +232,15 @@ section{
         datasets.forEach(dataset => {
           chart.data.datasets.push(dataset);
         });
-        chart.update();
+        chart.update(); 
       },
       error: () => console.log("Failed to fetch chart data from " + endpoint + "!")
     });
   }
 
   function loadAllCharts(year) {
-    loadChart(spendPerCustomerChart, `/chart/spend-per-customer/${year}/`);
-    loadChart(paymentMethodChart , `/chart/expense-types/${year}/`);
+    loadChart(spendPerCustomerChart, `/chart/line-chart/${year}/`);
+    loadChart(paymentMethodChart , `/chart/pie-chart/${year}/`);
   }
 </script>
 

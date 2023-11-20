@@ -5,84 +5,77 @@ from django.db.models import Avg, Max, Min, Sum , F
 from datetime import timedelta , datetime
 from django.conf import settings
 from django.http import JsonResponse
+from rest_framework.response import Response
 from utils.charts import months , types, colorPrimary, colorSuccess, colorDanger, generate_color_palette, get_year_dict , get_type_dict
-from utils.charts import *
 from .forms import *
 from django.db.models import Q
 from django.db.models.functions import ExtractYear, ExtractMonth
-import json
+from rest_framework.views import APIView
 from utils.charts import *
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login , logout , authenticate
 from django.contrib.auth.forms import UserCreationForm
 
-def get_filter_options(request):
-    grouped_expenses = Item.objects.annotate(year=ExtractYear("time_purchased")).values("year").order_by("-year").distinct()
-    options = [expense["year"] for expense in grouped_expenses]
-    return JsonResponse({
-        "options": options,
-    })
+
+class GetOptions(APIView):
+    def get(self,request):
+        grouped_expenses = Item.objects.annotate(year=ExtractYear("time_purchased")).values("year").order_by("-year").distinct()
+        options = [expense["year"] for expense in grouped_expenses]
+        return Response({
+            'options' : options
+        })
 
 
+class LineChart(APIView):
+    def get(self,request, year):
+        grouped_expenses = Item.objects.filter(time_purchased__year=year).\
+                                        annotate(item_price=F("price")).\
+                                        annotate(month=ExtractMonth("time_purchased")).\
+                                        values("month").annotate(sum=Sum("price")).\
+                                        values("month", "sum").order_by("month")
+        sales_dict = get_year_dict()
 
-def get_sales_chart(request, year):
-    expenses = Item.objects.filter(time_purchased__year=year)
-
-    grouped_expenses = expenses.annotate(item_price=F("price")).annotate(month=ExtractMonth("time_purchased"))\
-        .values("month").annotate(average=Sum("price")).values("month", "average").order_by("month")
-
-    sales_dict = get_year_dict()
-
-    for group in grouped_expenses:
-        sales_dict[months[group["month"]-1]] = round(group["average"], 2)
-    return JsonResponse({
-        "title": f"Sales in {year}",
-        "data": {
-            "labels": list(sales_dict.keys()),
-            "datasets": [{
-                "label": "Amount (ل.س)",
-                "backgroundColor": colorPrimary,
-                "borderColor": colorPrimary,
-                "data": list(sales_dict.values()),
-            }]
-        },
-    })
-
-
+        for group in grouped_expenses:
+            sales_dict[months[group["month"]-1]] = group["sum"]
+        return Response({
+            "title": f"Sales in {year}",
+            "data": {
+                "labels": list(sales_dict.keys()),
+                "datasets": [{
+                    "label": "Amount (ل.س)",
+                    "backgroundColor": colorPrimary,
+                    "borderColor": colorPrimary,
+                    "data": list(sales_dict.values()),
+                }]
+            },
+        })
 
 
-def expense_types(request,year):
-    expenses = Item.objects.filter(time_purchased__year=year)
+class PieChart(APIView):
+    def get(self,request,year):
+        grouped_expenses = Item.objects.filter(time_purchased__year=year).\
+                                        annotate(item_price=F("price")).values("expense_type").\
+                                        annotate(sum=Sum("price"))\
+                                        .values("expense_type","sum").distinct()
 
-    grouped_expenses = expenses.annotate(item_price=F("price")).values("expense_type").annotate(average=Sum("price"))\
-        .values("expense_type","average").distinct()
+        types_dict = get_type_dict()
+        for group in grouped_expenses:
+            types_dict[group["expense_type"]] = round(group["sum"], 2)
 
-    types_dict = get_type_dict()
-
-    for group in grouped_expenses:
-        types_dict[group["expense_type"]] = round(group["average"], 2)
-    return JsonResponse({
-        "title": f"type od expenses in {year}",
-        "data": {
-            "labels": list(types_dict.keys()),
-            "datasets": [{
-                "label": "Amount (ل.س)",
-                "backgroundColor": generate_color_palette(len(types_dict)),
-                "borderColor": generate_color_palette(len(types_dict)),
-                "data": list(types_dict.values()),
-            }]
-        },
-    })
+        return Response({
+            "title": f"type od expenses in {year}",
+            "data": {
+                "labels": list(types_dict.keys()),
+                "datasets": [{
+                    "label": "Amount (ل.س)",
+                    "backgroundColor": generate_color_palette(len(types_dict)),
+                    "borderColor": generate_color_palette(len(types_dict)),
+                    "data": list(types_dict.values()),
+                }]
+            },
+        })
 
 
-
-@login_required(login_url = 'login')
-def main(request):
-
-    context = {
-
-    }
-    return render(request, "main.html", context)
 
 @login_required(login_url = 'login')
 def expense(request):
@@ -134,12 +127,6 @@ def registerUser(request):
     return render(request,'sign-up.html' , context)
 
 
-def income(request):
-    context = {
-        
-    }
-    return render(request,'income.html' , context)
-
 
 
 def contact(request):
@@ -158,3 +145,13 @@ def contact(request):
 
     }
     return render(request, 'contact.html', context)
+
+
+@login_required(login_url = 'login')
+def main(request):
+    context = {}
+    return render(request, "main.html", context)
+
+def income(request):
+    context = {}
+    return render(request,'income.html' , context)
