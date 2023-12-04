@@ -5,7 +5,7 @@ from utils.charts import months , types, colorPrimary, colorSuccess, colorDanger
 from utils.charts import *
 from django.db.models.functions import ExtractYear, ExtractMonth
 from django.db.models import Avg, Max, Min, Sum , F
-
+from .serializers import ItemSerializer
 
 class Pie(APIView):
     def get(self,request,year):
@@ -35,7 +35,15 @@ class Line(APIView):
 
         for group in grouped_expenses:
             sales_dict[months[group["month"]-1]] = group["sum"]
-        return Response({
-                "labels": list(sales_dict.keys()),
-                "data": list(sales_dict.values()),
-        })
+        return Response([ list(sales_dict.keys()),
+                         list(sales_dict.values()),]
+                         )
+
+
+
+
+class Test(APIView):
+    def get(self,request):
+        exp = Item.objects.all()[:50]
+        serializer = ItemSerializer(exp , many=True)
+        return Response(serializer.data)
